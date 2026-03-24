@@ -1,0 +1,73 @@
+<!DOCTYPE html> 
+<html>
+<head>
+  <title>Pomodoro Timer</title>
+</head>
+<body id="body" style="text-align:center; font-family:sans-serif; transition:0.2s;">
+
+<h1 id="mode">Work</h1>
+<h2 id="time">25:00</h2>
+<button onclick="startTimer()">Start</button>
+<button onclick="flashScreen()">テスト点滅</button>
+
+<script>
+let workTime = 25 * 60;
+let breakTime = 5 * 60;
+let timeLeft = workTime;
+let isWork = true;
+let timer;
+let flashing = false;
+
+function formatTime(sec){
+  let m = Math.floor(sec / 60);
+  let s = sec % 60;
+  return `${m}:${s.toString().padStart(2,'0')}`;
+}
+
+function updateDisplay(){
+  document.getElementById("time").innerText = formatTime(timeLeft);
+  document.getElementById("mode").innerText = isWork ? "Work" : "Break";
+}
+
+// 🔵🟡 点滅処理（1分）
+function flashScreen(){
+  if(flashing) return;
+  flashing = true;
+
+  let body = document.getElementById("body");
+  let count = 0;
+
+  let flash = setInterval(() => {
+    body.style.backgroundColor = (count % 2 === 0) ? "blue" : "yellow";
+    count++;
+  }, 300);
+
+  setTimeout(() => {
+    clearInterval(flash);
+    body.style.backgroundColor = "white";
+    flashing = false;
+  }, 60000);
+}
+
+function startTimer(){
+  if(timer) return;
+
+  timer = setInterval(() => {
+    timeLeft--;
+    updateDisplay();
+
+    if(timeLeft <= 0){
+      flashScreen(); // ←ここ追加🔥
+
+      isWork = !isWork;
+      timeLeft = isWork ? workTime : breakTime;
+      updateDisplay();
+    }
+  }, 1000);
+}
+
+updateDisplay();
+</script>
+
+</body>
+</html>
