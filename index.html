@@ -7,6 +7,8 @@
 
 <h1 id="mode">Work</h1>
 <h2 id="time">25:00</h2>
+<h3 id="count">周回：0</h3>
+
 <button onclick="startTimer()">Start</button>
 <button onclick="flashScreen()">テスト点滅</button>
 
@@ -18,6 +20,8 @@ let isWork = true;
 let timer;
 let flashing = false;
 
+let count = 0; // 🔥追加：周回カウント
+
 function formatTime(sec){
   let m = Math.floor(sec / 60);
   let s = sec % 60;
@@ -27,6 +31,7 @@ function formatTime(sec){
 function updateDisplay(){
   document.getElementById("time").innerText = formatTime(timeLeft);
   document.getElementById("mode").innerText = isWork ? "Work" : "Break";
+  document.getElementById("count").innerText = "周回：" + count;
 }
 
 // 🔵🟡 点滅処理（1分）
@@ -35,11 +40,11 @@ function flashScreen(){
   flashing = true;
 
   let body = document.getElementById("body");
-  let count = 0;
+  let countFlash = 0;
 
   let flash = setInterval(() => {
-    body.style.backgroundColor = (count % 2 === 0) ? "blue" : "yellow";
-    count++;
+    body.style.backgroundColor = (countFlash % 2 === 0) ? "blue" : "yellow";
+    countFlash++;
   }, 300);
 
   setTimeout(() => {
@@ -57,10 +62,16 @@ function startTimer(){
     updateDisplay();
 
     if(timeLeft <= 0){
-      flashScreen(); // ←ここ追加🔥
+      flashScreen();
+
+      // 🔥ここが本質
+      if(!isWork){
+        count++; // 休憩終了 → 1周完了
+      }
 
       isWork = !isWork;
       timeLeft = isWork ? workTime : breakTime;
+
       updateDisplay();
     }
   }, 1000);
